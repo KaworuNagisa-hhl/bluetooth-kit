@@ -217,34 +217,68 @@ struct Index {
 
   build() {
     Stack() {
-      Column() {
-        Text('Bluetooth Kit Demo')
-          .fontSize(24)
-          .fontWeight(FontWeight.Bold)
-          .fontColor('#F8F8F8')
-        Text('mock transport validates BLE profile, codec, packet receive, and MTU chunking')
-          .fontSize(13)
-          .fontColor('#A8ADB7')
-          .margin({ top: 8 })
+      Scroll() {
         Column() {
-          this.infoRow('state', this.connectionState)
-          this.infoRow('profiles', this.profileSummary)
-          this.infoRow('permission', this.permissionSummary)
-          this.infoRow('scan', this.scanSummary)
-          this.infoRow('request', this.commandSummary)
-          this.infoRow('packet', this.packetSummary)
-          this.infoRow('mtu', this.chunkSummary)
-          this.infoRow('error', this.errorSummary)
+          Row() {
+            Column() {
+              Text('bluetooth_kit')
+                .fontSize(28)
+                .fontWeight(FontWeight.Bold)
+                .fontColor('#102033')
+              Text('BLE GATT + Classic SPP')
+                .fontSize(15)
+                .fontColor('#58708A')
+                .margin({ top: 6 })
+            }
+            .layoutWeight(1)
+
+            Text('BLE')
+              .fontSize(13)
+              .fontWeight(FontWeight.Bold)
+              .fontColor('#087857')
+              .backgroundColor('#DBF7EE')
+              .borderRadius(16)
+              .padding({ left: 14, right: 14, top: 8, bottom: 8 })
+
+            Text('SPP')
+              .fontSize(13)
+              .fontWeight(FontWeight.Bold)
+              .fontColor('#3152C9')
+              .backgroundColor('#E8EDFF')
+              .borderRadius(16)
+              .padding({ left: 14, right: 14, top: 8, bottom: 8 })
+              .margin({ left: 8 })
+          }
+          .width('100%')
+          .alignItems(VerticalAlign.Center)
+
+          this.statusCard('权限', this.permissionSummary, '#A06600')
+          this.statusCard('扫描设备', this.scanSummary, '#3152C9')
+          this.statusCard('连接状态', this.connectionState, '#087857')
+          this.statusCard('命令请求', this.commandSummary, '#3152C9')
+          this.statusCard('协议收包', this.packetSummary, '#40576F')
+          this.statusCard('MTU 分包', this.chunkSummary, '#40576F')
+          this.statusCard('异常状态', this.errorSummary, '#A06600')
+
+          Button('重新运行 Demo')
+            .height(52)
+            .width('100%')
+            .fontSize(16)
+            .fontWeight(FontWeight.Bold)
+            .fontColor('#FFFFFF')
+            .backgroundColor('#13B981')
+            .borderRadius(16)
+            .margin({ top: 18, bottom: 24 })
+            .onClick(() => {
+              this.runBluetoothKitDemo()
+            })
         }
-        .width('88%')
-        .padding(16)
-        .margin({ top: 24 })
-        .borderRadius(8)
-        .backgroundColor('#181A20')
+        .width('100%')
+        .padding({ left: 24, right: 24, top: 52, bottom: 32 })
       }
       .width('100%')
       .height('100%')
-      .justifyContent(FlexAlign.Center)
+      .backgroundColor('#F6F8FB')
 
       if (this.toastVisible) {
         this.toastLayer()
@@ -256,7 +290,34 @@ struct Index {
     }
     .width('100%')
     .height('100%')
-    .backgroundColor('#0B0B0C')
+    .backgroundColor('#F6F8FB')
+  }
+
+  @Builder
+  private statusCard(title: string, value: string, accentColor: string) {
+    Column() {
+      Text(title)
+        .fontSize(16)
+        .fontWeight(FontWeight.Bold)
+        .fontColor('#25384F')
+        .maxLines(1)
+        .textOverflow({ overflow: TextOverflow.Ellipsis })
+
+      Text(value)
+        .fontSize(17)
+        .fontWeight(FontWeight.Medium)
+        .fontColor(accentColor)
+        .lineHeight(24)
+        .maxLines(3)
+        .textOverflow({ overflow: TextOverflow.Ellipsis })
+        .margin({ top: 10 })
+    }
+    .width('100%')
+    .padding(18)
+    .margin({ top: 14 })
+    .borderRadius(16)
+    .backgroundColor('#FFFFFF')
+    .border({ width: 1, color: '#E1E8F0' })
   }
 
   @Builder
@@ -265,12 +326,12 @@ struct Index {
       Text(this.toastText)
         .fontSize(14)
         .fontWeight(FontWeight.Medium)
-        .fontColor('#0B0B0C')
+        .fontColor('#FFFFFF')
         .maxLines(2)
         .textOverflow({ overflow: TextOverflow.Ellipsis })
-        .padding({ left: 16, right: 16, top: 10, bottom: 10 })
-        .backgroundColor('#F8F8F8')
-        .borderRadius(8)
+        .padding({ left: 18, right: 18, top: 12, bottom: 12 })
+        .backgroundColor('#111827')
+        .borderRadius(18)
     }
     .width('100%')
     .height('100%')
@@ -285,57 +346,41 @@ struct Index {
     Column() {
       Column() {
         Text(this.dialogTitle)
-          .fontSize(20)
+          .fontSize(22)
           .fontWeight(FontWeight.Bold)
-          .fontColor('#F8F8F8')
-          .maxLines(2)
-          .textOverflow({ overflow: TextOverflow.Ellipsis })
+          .fontColor('#102033')
+        .maxLines(2)
+        .textOverflow({ overflow: TextOverflow.Ellipsis })
 
         Text(this.dialogMessage)
-          .fontSize(14)
-          .fontColor('#C9CED8')
-          .lineHeight(21)
-          .margin({ top: 12 })
+          .fontSize(15)
+          .fontColor('#40576F')
+          .lineHeight(23)
+          .margin({ top: 14 })
 
         Button('知道了')
-          .fontSize(15)
-          .fontWeight(FontWeight.Medium)
-          .fontColor('#0B0B0C')
-          .height(42)
+          .fontSize(16)
+          .fontWeight(FontWeight.Bold)
+          .fontColor('#FFFFFF')
+          .height(48)
           .width('100%')
-          .margin({ top: 18 })
-          .borderRadius(8)
-          .backgroundColor('#F8F8F8')
+          .margin({ top: 22 })
+          .borderRadius(14)
+          .backgroundColor('#13B981')
           .onClick(() => {
             this.dialogVisible = false
           })
       }
-      .width('82%')
-      .padding(20)
-      .borderRadius(8)
-      .backgroundColor('#20242D')
-      .border({ width: 1, color: '#33FFFFFF' })
+      .width('84%')
+      .padding(22)
+      .borderRadius(20)
+      .backgroundColor('#FFFFFF')
+      .border({ width: 1, color: '#BFEBD9' })
     }
     .width('100%')
     .height('100%')
     .justifyContent(FlexAlign.Center)
     .alignItems(HorizontalAlign.Center)
     .backgroundColor('#99000000')
-  }
-
-  @Builder
-  private infoRow(label: string, value: string) {
-    Row() {
-      Text(label)
-        .width(72)
-        .fontSize(13)
-        .fontColor('#7D8595')
-      Text(value)
-        .layoutWeight(1)
-        .fontSize(14)
-        .fontColor('#F8F8F8')
-    }
-    .width('100%')
-    .margin({ bottom: 10 })
   }
 }

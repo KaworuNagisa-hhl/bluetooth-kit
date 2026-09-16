@@ -144,7 +144,7 @@ export interface BluetoothScanner {
 }
 
 export interface TransportFactory {
-  create(profile: BluetoothDeviceProfile): BluetoothTransport
+  create(profile: BluetoothDeviceProfile, device?: BluetoothDeviceSnapshot): BluetoothTransport
 }
 
 export interface ScannerFactory {

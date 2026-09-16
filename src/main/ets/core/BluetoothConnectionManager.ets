@@ -72,7 +72,7 @@ export class BluetoothConnectionManager {
       return
     }
     this.codec = codec
-    const transport = this.config.transportFactory.create(profile)
+    const transport = this.config.transportFactory.create(profile, device)
     transport.onData((data: ArrayBuffer) => this.handleData(data))
     transport.onStateChange((state: BluetoothConnectionState) => this.setState(state))
     transport.onError((error: BluetoothError) => this.emitError(error.code, error.message, error.cause))
