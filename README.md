@@ -2,7 +2,7 @@
 
 `bluetooth_kit` 是一个面向 OpenHarmony/HarmonyOS ArkTS 的蓝牙连接与协议配置工具包，适合智能家居、IoT 设备、工控外设、仪表设备等场景。它把设备画像、扫描、连接传输和业务协议拆开，同一套业务代码可以接 BLE GATT、传统蓝牙 SPP，也可以接用户自己的私有协议。
 
-![bluetooth kit demo](https://cdn.jsdelivr.net/gh/KaworuNagisa-hhl/bluetooth-kit@main/docs/assets/bluetooth-kit-demo.gif)
+![bluetooth kit demo](https://cdn.jsdelivr.net/gh/KaworuNagisa-hhl/bluetooth-kit@main/docs/bluetooth-kit-preview.gif)
 
 ## 安装
 
