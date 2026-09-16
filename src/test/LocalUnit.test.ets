@@ -1,5 +1,5 @@
 import { describe, it, expect } from '@ohos/hypium'
-import { BleMtuChunker, ByteUtils, Crc16, LengthPrefixedCodec, ProtocolFrameKind } from 'bluetooth_kit'
+import { BleMtuChunker, ByteUtils, Crc16, LengthPrefixedCodec, ProtocolFrameKind } from '@kaworunagisa_hhl/bluetooth-kit'
 
 export default function localUnitTest() {
   describe('BluetoothKit', () => {

@@ -18,7 +18,7 @@ import {
   MemoryLoopbackTransport,
   ScannerFactory,
   TransportFactory
-} from 'bluetooth_kit'
+} from '@kaworunagisa_hhl/bluetooth-kit'
 
 class DemoTransportFactory implements TransportFactory {
   create(): BluetoothTransport {

@@ -1,16 +1,16 @@
-# bluetooth_kit
+# @kaworunagisa_hhl/bluetooth-kit
 
-`bluetooth_kit` 是一个面向 OpenHarmony/HarmonyOS ArkTS 的蓝牙连接与协议配置工具包，适合智能家居、IoT 设备、工控外设、仪表设备等场景。它把设备画像、扫描、连接传输和业务协议拆开，同一套业务代码可以接 BLE GATT、传统蓝牙 SPP，也可以接用户自己的私有协议。
+`@kaworunagisa_hhl/bluetooth-kit` 是一个面向 OpenHarmony/HarmonyOS ArkTS 的蓝牙连接与协议配置工具包，适合智能家居、IoT 设备、工控外设、仪表设备等场景。它把设备画像、扫描、连接传输和业务协议拆开，同一套业务代码可以接 BLE GATT、传统蓝牙 SPP，也可以接用户自己的私有协议。
 
 ![bluetooth kit demo](https://cdn.jsdelivr.net/gh/KaworuNagisa-hhl/bluetooth-kit@main/docs/bluetooth-kit-preview.gif)
 
 ## 安装
 
 ```bash
-ohpm install bluetooth_kit
+ohpm install @kaworunagisa_hhl/bluetooth-kit
 ```
 
-安装后从 `bluetooth_kit` 导入需要的管理器、协议编解码器、传输适配器和测试工具。
+安装后从 `@kaworunagisa_hhl/bluetooth-kit` 导入需要的管理器、协议编解码器、传输适配器和测试工具。
 
 ## 能力概览
 
@@ -64,7 +64,7 @@ import {
   LengthPrefixedCodec,
   MemoryBluetoothScanner,
   MemoryLoopbackTransport
-} from 'bluetooth_kit'
+} from '@kaworunagisa_hhl/bluetooth-kit'
 
 const bleServiceUuid = '0000fff0-0000-1000-8000-00805f9b34fb'
 
@@ -167,7 +167,7 @@ import {
   ClassicSppClientAdapter,
   HarmonyBluetoothScanner,
   HarmonyBluetoothTransportFactory
-} from 'bluetooth_kit'
+} from '@kaworunagisa_hhl/bluetooth-kit'
 
 const transportFactory = new HarmonyBluetoothTransportFactory(
   {
