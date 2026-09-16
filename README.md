@@ -30,6 +30,12 @@
 }
 ```
 
+## 安装
+
+```bash
+ohpm install bluetooth_kit
+```
+
 ## 基础用法
 
 ```ts
