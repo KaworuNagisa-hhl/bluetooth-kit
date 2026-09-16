@@ -1,0 +1,9 @@
+{
+  "module": {
+    "name": "bluetooth_kit",
+    "type": "har",
+    "deviceTypes": [
+      "default"
+    ]
+  }
+}
