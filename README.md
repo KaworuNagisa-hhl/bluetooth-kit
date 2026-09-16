@@ -183,7 +183,7 @@ customProtocolFactory: {
 
 ## Demo 验证
 
-![bluetooth kit demo](docs/assets/bluetooth-kit-demo.gif)
+![bluetooth kit demo](https://raw.githubusercontent.com/KaworuNagisa-hhl/bluetooth-kit/main/docs/assets/bluetooth-kit-demo.gif)
 
 仓库中的 `example/BluetoothKitDemo.ets` 可直接拷到 HarmonyOS entry 页面中运行。示例使用 `MemoryBluetoothScanner` 和 `MemoryLoopbackTransport`，并提供页面内 Toast/Dialog，让用户能明显感知扫描、连接、收包、完成和异常状态。它可验证：
 
