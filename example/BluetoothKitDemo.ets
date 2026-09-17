@@ -222,11 +222,11 @@ struct Index {
           Row() {
             Column() {
               Text('bluetooth_kit')
-                .fontSize(28)
+                .fontSize(24)
                 .fontWeight(FontWeight.Bold)
                 .fontColor('#102033')
               Text('BLE GATT + Classic SPP')
-                .fontSize(15)
+                .fontSize(14)
                 .fontColor('#58708A')
                 .margin({ top: 6 })
             }
@@ -237,7 +237,7 @@ struct Index {
               .fontWeight(FontWeight.Bold)
               .fontColor('#087857')
               .backgroundColor('#DBF7EE')
-              .borderRadius(16)
+              .borderRadius(12)
               .padding({ left: 14, right: 14, top: 8, bottom: 8 })
 
             Text('SPP')
@@ -245,7 +245,7 @@ struct Index {
               .fontWeight(FontWeight.Bold)
               .fontColor('#3152C9')
               .backgroundColor('#E8EDFF')
-              .borderRadius(16)
+              .borderRadius(12)
               .padding({ left: 14, right: 14, top: 8, bottom: 8 })
               .margin({ left: 8 })
           }
@@ -267,14 +267,14 @@ struct Index {
             .fontWeight(FontWeight.Bold)
             .fontColor('#FFFFFF')
             .backgroundColor('#13B981')
-            .borderRadius(16)
+            .borderRadius(12)
             .margin({ top: 18, bottom: 24 })
             .onClick(() => {
               this.runBluetoothKitDemo()
             })
         }
         .width('100%')
-        .padding({ left: 24, right: 24, top: 52, bottom: 32 })
+        .padding({ left: 20, right: 20, top: 32, bottom: 28 })
       }
       .width('100%')
       .height('100%')
@@ -314,8 +314,8 @@ struct Index {
     }
     .width('100%')
     .padding(18)
-    .margin({ top: 14 })
-    .borderRadius(16)
+    .margin({ top: 12 })
+    .borderRadius(12)
     .backgroundColor('#FFFFFF')
     .border({ width: 1, color: '#E1E8F0' })
   }
@@ -337,7 +337,7 @@ struct Index {
     .height('100%')
     .justifyContent(FlexAlign.Start)
     .alignItems(HorizontalAlign.Center)
-    .padding({ top: 54, left: 16, right: 16 })
+    .padding({ top: 44, left: 16, right: 16 })
     .hitTestBehavior(HitTestMode.Transparent)
   }
 
@@ -365,7 +365,7 @@ struct Index {
           .height(48)
           .width('100%')
           .margin({ top: 22 })
-          .borderRadius(14)
+          .borderRadius(12)
           .backgroundColor('#13B981')
           .onClick(() => {
             this.dialogVisible = false
@@ -373,7 +373,7 @@ struct Index {
       }
       .width('84%')
       .padding(22)
-      .borderRadius(20)
+      .borderRadius(16)
       .backgroundColor('#FFFFFF')
       .border({ width: 1, color: '#BFEBD9' })
     }
