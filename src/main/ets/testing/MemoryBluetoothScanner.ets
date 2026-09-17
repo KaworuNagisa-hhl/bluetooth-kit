@@ -51,6 +51,15 @@ export class MemoryBluetoothScanner implements BluetoothScanner {
   }
 
   private matchesFilter(filter: BluetoothScanFilter, device: BluetoothDeviceSnapshot): boolean {
+    if (filter.deviceId && device.deviceId !== filter.deviceId) {
+      return false
+    }
+    if (filter.macAddress && (!device.macAddress || device.macAddress.toLowerCase() !== filter.macAddress.toLowerCase())) {
+      return false
+    }
+    if (filter.name && device.name !== filter.name) {
+      return false
+    }
     if (filter.namePrefix && (!device.name || device.name.indexOf(filter.namePrefix) !== 0)) {
       return false
     }

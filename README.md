@@ -19,7 +19,8 @@ ohpm install bluetooth_kit
 - 内置 `LengthPrefixedCodec` 与 `JsonLineCodec`，并可通过 `BluetoothProtocolCodec` 接入私有协议。
 - 内置命令队列、序号、ACK/DATA 应答匹配、超时重试、半包/粘包解析、CRC 与 BLE MTU 分包工具。
 - 支持运行时能力探测与结构化日志，方便按设备/API 版本判断 BLE、Classic SPP、MTU、RSSI、后台扫描和多连接等能力。
-- 扫描过滤支持 Service UUID、名称前缀、厂商 ID 与 RSSI 阈值，便于屏蔽弱信号或非目标设备。
+- 扫描过滤支持 deviceId、MAC 地址、广播名、广播名前缀、Service UUID、厂商 ID 与 RSSI 阈值，便于屏蔽弱信号或非目标设备。
+- 支持 `scanAndConnect()` 一步完成扫描匹配和连接，适合按已知 MAC 地址、系统设备 ID 或广播名直连。
 - 提供 `BleGattTransport`、`ClassicSppTransport`、`HarmonyBluetoothScanner`、`HarmonyBluetoothTransportFactory` 和权限辅助接口，方便按项目 API 版本接入 HarmonyOS 系统蓝牙能力。
 - 提供 `MemoryBluetoothScanner` 与 `MemoryLoopbackTransport`，可在没有真实外设时验证配置、协议、命令链路和页面反馈。
 
@@ -122,6 +123,7 @@ const manager = new BluetoothConnectionManager({
     create() {
       return new MemoryBluetoothScanner([{
         deviceId: 'memory-loopback-001',
+        macAddress: 'AA:BB:CC:00:00:01',
         name: 'Memory Lock BLE',
         serviceUuids: [bleServiceUuid],
         connectable: true
@@ -147,7 +149,12 @@ console.info('ble=' + capabilities.bleCentral.toString() + ', spp=' + capabiliti
 await manager.scan({
   mode: BluetoothScanMode.Ble,
   timeoutMs: 1500,
-  filters: [{ serviceUuid: bleServiceUuid, minRssi: -70 }]
+  filters: [{
+    serviceUuid: bleServiceUuid,
+    name: 'Memory Lock BLE',
+    macAddress: 'AA:BB:CC:00:00:01',
+    minRssi: -70
+  }]
 }, (device) => {
   console.info('found device=' + device.deviceId)
 })
@@ -156,10 +163,16 @@ manager.onPacket((packet) => {
   console.info('packet command=' + packet.command.toString())
 })
 
-await manager.connect({
-  deviceId: 'memory-loopback-001',
-  name: 'Memory Lock BLE'
-}, 'smart-lock-ble')
+await manager.scanAndConnect({
+  profileId: 'smart-lock-ble',
+  preferredMacAddress: 'AA:BB:CC:00:00:01',
+  preferredName: 'Memory Lock BLE',
+  scan: {
+    mode: BluetoothScanMode.Ble,
+    timeoutMs: 3000,
+    filters: [{ macAddress: 'AA:BB:CC:00:00:01', name: 'Memory Lock BLE' }]
+  }
+})
 
 const result = await manager.request({
   command: 0x10,
@@ -211,6 +224,8 @@ const scannerFactory = {
 - `BluetoothLogger`：接收扫描、连接、状态、发包、收包和异常事件，可接入项目日志、埋点或问题诊断面板。
 
 真实扫描、配对、连接、MTU 协商、后台行为和厂商设备协议都必须在真机验证。库本身提供稳定边界和可测试协议链路，系统 API 的具体调用由项目适配器负责。
+
+> 说明：部分 BLE 设备和系统版本会随机化或隐藏 MAC 地址。建议优先组合 `serviceUuid`、广播名、厂商 ID、RSSI 和业务协议握手确认设备身份；能稳定拿到地址的传统蓝牙/SPP 或特定系统适配器，再使用 `macAddress` 精确匹配。
 
 ## 自定义协议
 

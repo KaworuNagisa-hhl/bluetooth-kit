@@ -14,7 +14,8 @@ import {
   BluetoothTransport,
   CommandOptions,
   CommandResult,
-  ProtocolFrameKind
+  ProtocolFrameKind,
+  ScanAndConnectOptions
 } from '../model/BluetoothTypes'
 import { ByteUtils } from '../utils/ByteUtils'
 import { BluetoothCommandQueue } from './BluetoothCommandQueue'
@@ -139,6 +140,21 @@ export class BluetoothConnectionManager {
     this.setState(BluetoothConnectionState.Idle)
   }
 
+  async scanAndConnect(options: ScanAndConnectOptions): Promise<BluetoothDeviceSnapshot | undefined> {
+    let selectedDevice: BluetoothDeviceSnapshot | undefined = undefined
+    await this.scan(options.scan, (device: BluetoothDeviceSnapshot) => {
+      if (!selectedDevice || this.isPreferredDevice(device, options)) {
+        selectedDevice = device
+      }
+    })
+    if (!selectedDevice) {
+      this.emitError('DEVICE_NOT_FOUND', 'No Bluetooth device matched scan filters.')
+      return undefined
+    }
+    await this.connect(selectedDevice, options.profileId)
+    return selectedDevice
+  }
+
   async stopScan(): Promise<void> {
     if (!this.scanner) {
       return
@@ -219,6 +235,20 @@ export class BluetoothConnectionManager {
   private nextSequence(): number {
     this.sequence = (this.sequence + 1) & 0xFF
     return this.sequence
+  }
+
+  private isPreferredDevice(device: BluetoothDeviceSnapshot, options: ScanAndConnectOptions): boolean {
+    if (options.preferredDeviceId && device.deviceId === options.preferredDeviceId) {
+      return true
+    }
+    if (options.preferredMacAddress && device.macAddress &&
+      device.macAddress.toLowerCase() === options.preferredMacAddress.toLowerCase()) {
+      return true
+    }
+    if (options.preferredName && device.name === options.preferredName) {
+      return true
+    }
+    return false
   }
 
   private setState(state: BluetoothConnectionState): void {

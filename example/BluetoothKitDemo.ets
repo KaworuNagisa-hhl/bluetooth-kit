@@ -114,6 +114,7 @@ struct Index {
     const memoryDevices: BluetoothDeviceSnapshot[] = [
       {
         deviceId: 'memory-loopback-001',
+        macAddress: 'AA:BB:CC:00:00:01',
         name: 'Memory Lock BLE',
         rssi: -48,
         connectable: true,
@@ -122,6 +123,7 @@ struct Index {
       },
       {
         deviceId: 'memory-spp-001',
+        macAddress: 'AA:BB:CC:00:00:02',
         name: 'Memory Serial Classic',
         rssi: -58,
         connectable: true
@@ -171,7 +173,12 @@ struct Index {
     await manager.scan({
       mode: BluetoothScanMode.Ble,
       timeoutMs: 1500,
-      filters: [{ serviceUuid: bleServiceUuid, namePrefix: 'Memory', minRssi: -70 }]
+      filters: [{
+        serviceUuid: bleServiceUuid,
+        name: 'Memory Lock BLE',
+        macAddress: 'AA:BB:CC:00:00:01',
+        minRssi: -70
+      }]
     }, (device: BluetoothDeviceSnapshot) => {
       foundDevices.push(device)
     })
@@ -187,10 +194,16 @@ struct Index {
     this.chunkSummary = chunks.length.toString() + ' chunks / first=' + chunks[0].byteLength.toString() + ' bytes'
     this.showToast('MTU 分包完成：' + this.chunkSummary)
 
-    await manager.connect({
-      deviceId: 'memory-loopback-001',
-      name: 'Memory Loopback'
-    }, 'demo-ble-device')
+    await manager.scanAndConnect({
+      profileId: 'demo-ble-device',
+      preferredMacAddress: 'AA:BB:CC:00:00:01',
+      preferredName: 'Memory Lock BLE',
+      scan: {
+        mode: BluetoothScanMode.Ble,
+        timeoutMs: 1500,
+        filters: [{ macAddress: 'AA:BB:CC:00:00:01', name: 'Memory Lock BLE' }]
+      }
+    })
 
     const result = await manager.request({
       command: 0x10,

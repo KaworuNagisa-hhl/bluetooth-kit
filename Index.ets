@@ -27,6 +27,7 @@ export {
   CustomProtocolFactory,
   DecodeResult,
   ScannerFactory,
+  ScanAndConnectOptions,
   TransportFactory
 } from './src/main/ets/model/BluetoothTypes'
 export { ByteUtils } from './src/main/ets/utils/ByteUtils'

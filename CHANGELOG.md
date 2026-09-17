@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.3
+
+- Added exact scan filters for `deviceId`, `macAddress` and broadcast `name`.
+- Added `BluetoothDeviceSnapshot.macAddress` for adapters that can expose a stable address.
+- Added `BluetoothConnectionManager.scanAndConnect()` to scan by device identity or broadcast name and connect with one call.
+- Updated demo and README examples for MAC/name based discovery and connection.
+
 ## 1.0.2
 
 - Added runtime Bluetooth capability reporting for BLE, Classic SPP, MTU, RSSI, PHY, L2CAP, background scan and multi-connection support.

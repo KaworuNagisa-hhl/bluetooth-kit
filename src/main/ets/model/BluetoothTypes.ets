@@ -56,6 +56,9 @@ export interface ConnectionPolicy {
 }
 
 export interface BluetoothScanFilter {
+  deviceId?: string
+  macAddress?: string
+  name?: string
   serviceUuid?: string
   namePrefix?: string
   manufacturerId?: number
@@ -81,6 +84,7 @@ export interface BluetoothDeviceProfile {
 
 export interface BluetoothDeviceSnapshot {
   deviceId: string
+  macAddress?: string
   name?: string
   rssi?: number
   connectable?: boolean
@@ -128,6 +132,14 @@ export interface CommandOptions {
   retryCount?: number
   expectAck?: boolean
   expectedResponseCommand?: number
+}
+
+export interface ScanAndConnectOptions {
+  profileId: string
+  scan: BluetoothScanConfig
+  preferredDeviceId?: string
+  preferredMacAddress?: string
+  preferredName?: string
 }
 
 export interface BluetoothTransport {
