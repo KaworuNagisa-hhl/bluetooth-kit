@@ -4,7 +4,10 @@ import {
   BluetoothDeviceSnapshot,
   BluetoothError,
   BluetoothKitConfig,
+  BluetoothLogEvent,
+  BluetoothLogLevel,
   BluetoothPacket,
+  BluetoothPlatformCapabilities,
   BluetoothProtocolCodec,
   BluetoothScanConfig,
   BluetoothScanner,
@@ -48,6 +51,19 @@ export class BluetoothConnectionManager {
     return this.registry.validate()
   }
 
+  async getCapabilities(): Promise<BluetoothPlatformCapabilities> {
+    if (this.config.capabilityProvider) {
+      const capabilities = await this.config.capabilityProvider.getCapabilities()
+      this.log(BluetoothLogLevel.Info, 'capabilities.loaded', undefined, undefined, undefined,
+        'Bluetooth capabilities loaded.')
+      return capabilities
+    }
+    const capabilities = this.inferCapabilities()
+    this.log(BluetoothLogLevel.Warn, 'capabilities.inferred', undefined, undefined, undefined,
+      'Bluetooth capabilities inferred from configured profiles.')
+    return capabilities
+  }
+
   onStateChange(listener: (state: BluetoothConnectionState) => void): void {
     this.stateListeners.push(listener)
   }
@@ -72,6 +88,8 @@ export class BluetoothConnectionManager {
       return
     }
     this.codec = codec
+    this.log(BluetoothLogLevel.Info, 'connect.start', profile.profileId, device.deviceId, undefined,
+      'Bluetooth connect started.')
     const transport = this.config.transportFactory.create(profile, device)
     transport.onData((data: ArrayBuffer) => this.handleData(data))
     transport.onStateChange((state: BluetoothConnectionState) => this.setState(state))
@@ -90,6 +108,8 @@ export class BluetoothConnectionManager {
       this.setState(BluetoothConnectionState.Failed)
       return
     }
+    this.log(BluetoothLogLevel.Info, 'connect.ready', profile.profileId, device.deviceId, BluetoothConnectionState.Ready,
+      'Bluetooth transport is ready.')
     this.setState(BluetoothConnectionState.Ready)
   }
 
@@ -99,6 +119,7 @@ export class BluetoothConnectionManager {
       return
     }
     this.setState(BluetoothConnectionState.Disconnecting)
+    this.log(BluetoothLogLevel.Info, 'disconnect.start')
     this.commandQueue.clear()
     await this.transport.disconnect()
     this.receiveBuffer = ByteUtils.empty()
@@ -111,8 +132,10 @@ export class BluetoothConnectionManager {
       return
     }
     this.setState(BluetoothConnectionState.Scanning)
+    this.log(BluetoothLogLevel.Info, 'scan.start', undefined, undefined, BluetoothConnectionState.Scanning)
     this.scanner = this.config.scannerFactory.create(config.mode)
     await this.scanner.startScan(config, listener)
+    this.log(BluetoothLogLevel.Info, 'scan.complete')
     this.setState(BluetoothConnectionState.Idle)
   }
 
@@ -131,6 +154,8 @@ export class BluetoothConnectionManager {
       this.emitError('NOT_CONNECTED', 'Bluetooth transport is not connected.')
       return packet
     }
+    this.log(BluetoothLogLevel.Debug, 'packet.send', undefined, undefined, undefined,
+      'command=' + packet.command.toString() + ', sequence=' + packet.sequence.toString())
     const encoded = this.codec.encode(packet)
     await this.transport.write(encoded)
     return packet
@@ -148,6 +173,8 @@ export class BluetoothConnectionManager {
         error
       }
     }
+    this.log(BluetoothLogLevel.Debug, 'request.enqueue', undefined, undefined, undefined,
+      'command=' + packet.command.toString() + ', sequence=' + packet.sequence.toString())
     return this.commandQueue.enqueue(packet, options)
   }
 
@@ -196,12 +223,15 @@ export class BluetoothConnectionManager {
 
   private setState(state: BluetoothConnectionState): void {
     this.state = state
+    this.log(BluetoothLogLevel.Debug, 'state.changed', undefined, undefined, state)
     for (let index = 0; index < this.stateListeners.length; index++) {
       this.stateListeners[index](state)
     }
   }
 
   private emitPacket(packet: BluetoothPacket): void {
+    this.log(BluetoothLogLevel.Debug, 'packet.received', undefined, undefined, undefined,
+      'command=' + packet.command.toString() + ', sequence=' + packet.sequence.toString())
     for (let index = 0; index < this.packetListeners.length; index++) {
       this.packetListeners[index](packet)
     }
@@ -209,6 +239,7 @@ export class BluetoothConnectionManager {
 
   private emitError(code: string, message: string, cause?: Error): void {
     const error: BluetoothError = { code, message, cause }
+    this.log(BluetoothLogLevel.Error, 'error', undefined, undefined, undefined, message, error)
     for (let index = 0; index < this.errorListeners.length; index++) {
       this.errorListeners[index](error)
     }
@@ -240,5 +271,59 @@ export class BluetoothConnectionManager {
         resolve(false)
       })
     })
+  }
+
+  private inferCapabilities(): BluetoothPlatformCapabilities {
+    let bleCentral = false
+    let classicSppClient = false
+    const profiles = this.registry.getProfiles()
+    for (let index = 0; index < profiles.length; index++) {
+      if (profiles[index].ble) {
+        bleCentral = true
+      }
+      if (profiles[index].classic) {
+        classicSppClient = true
+      }
+    }
+    return {
+      bleCentral,
+      blePeripheral: false,
+      classicSppClient,
+      classicSppServer: false,
+      bonding: false,
+      rssi: false,
+      mtu: bleCentral,
+      phy: false,
+      l2capChannel: false,
+      extendedAdvertising: false,
+      backgroundScan: false,
+      multipleConnections: false,
+      notes: ['Provide capabilityProvider to report real HarmonyOS device support.']
+    }
+  }
+
+  private log(
+    level: BluetoothLogLevel,
+    event: string,
+    profileId?: string,
+    deviceId?: string,
+    state?: BluetoothConnectionState,
+    message?: string,
+    error?: BluetoothError
+  ): void {
+    if (!this.config.logger) {
+      return
+    }
+    const logEvent: BluetoothLogEvent = {
+      level,
+      event,
+      timestamp: new Date().getTime(),
+      profileId,
+      deviceId,
+      state,
+      error,
+      message
+    }
+    this.config.logger.log(logEvent)
   }
 }

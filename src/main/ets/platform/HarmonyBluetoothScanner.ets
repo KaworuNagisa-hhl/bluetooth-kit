@@ -66,6 +66,9 @@ export class HarmonyBluetoothScanner implements BluetoothScanner {
     if (filter.manufacturerId !== undefined && device.manufacturerId !== filter.manufacturerId) {
       return false
     }
+    if (filter.minRssi !== undefined && (device.rssi === undefined || device.rssi < filter.minRssi)) {
+      return false
+    }
     if (filter.serviceUuid && !this.hasServiceUuid(device, filter.serviceUuid)) {
       return false
     }

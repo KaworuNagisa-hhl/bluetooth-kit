@@ -9,8 +9,13 @@ export {
   BluetoothDeviceProfile,
   BluetoothDeviceSnapshot,
   BluetoothError,
+  BluetoothCapabilityProvider,
   BluetoothKitConfig,
+  BluetoothLogger,
+  BluetoothLogEvent,
+  BluetoothLogLevel,
   BluetoothPacket,
+  BluetoothPlatformCapabilities,
   BluetoothProtocolCodec,
   BluetoothScanConfig,
   BluetoothScanFilter,
@@ -54,3 +59,4 @@ export {
 } from './src/main/ets/platform/HarmonyBluetoothPermissionHelper'
 export { MemoryBluetoothScanner } from './src/main/ets/testing/MemoryBluetoothScanner'
 export { MemoryLoopbackTransport } from './src/main/ets/testing/MemoryLoopbackTransport'
+export { StaticBluetoothCapabilityProvider } from './src/main/ets/testing/StaticBluetoothCapabilityProvider'

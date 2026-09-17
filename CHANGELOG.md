@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.2
+
+- Added runtime Bluetooth capability reporting for BLE, Classic SPP, MTU, RSSI, PHY, L2CAP, background scan and multi-connection support.
+- Added structured Bluetooth logger hooks for scan, connect, state, packet and error diagnostics.
+- Added RSSI threshold filtering for memory and Harmony scanner wrappers.
+- Updated demo and README usage to show capability reporting, logging and stronger scan filtering.
+
 ## 1.0.1
 
 - Added BLE GATT and Classic SPP transport adapter classes.

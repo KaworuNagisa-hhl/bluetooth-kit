@@ -59,6 +59,7 @@ export interface BluetoothScanFilter {
   serviceUuid?: string
   namePrefix?: string
   manufacturerId?: number
+  minRssi?: number
 }
 
 export interface BluetoothScanConfig {
@@ -155,10 +156,55 @@ export interface CustomProtocolFactory {
   create(protocolId: string): BluetoothProtocolCodec | undefined
 }
 
+export interface BluetoothPlatformCapabilities {
+  bleCentral: boolean
+  blePeripheral: boolean
+  classicSppClient: boolean
+  classicSppServer: boolean
+  bonding: boolean
+  rssi: boolean
+  mtu: boolean
+  phy: boolean
+  l2capChannel: boolean
+  extendedAdvertising: boolean
+  backgroundScan: boolean
+  multipleConnections: boolean
+  apiVersion?: number
+  notes?: string[]
+}
+
+export interface BluetoothCapabilityProvider {
+  getCapabilities(): Promise<BluetoothPlatformCapabilities>
+}
+
+export enum BluetoothLogLevel {
+  Debug = 'debug',
+  Info = 'info',
+  Warn = 'warn',
+  Error = 'error'
+}
+
+export interface BluetoothLogEvent {
+  level: BluetoothLogLevel
+  event: string
+  timestamp: number
+  profileId?: string
+  deviceId?: string
+  state?: BluetoothConnectionState
+  error?: BluetoothError
+  message?: string
+}
+
+export interface BluetoothLogger {
+  log(event: BluetoothLogEvent): void
+}
+
 export interface BluetoothKitConfig {
   profiles: BluetoothDeviceProfile[]
   codecs: BluetoothProtocolCodec[]
   transportFactory: TransportFactory
   scannerFactory?: ScannerFactory
   customProtocolFactory?: CustomProtocolFactory
+  capabilityProvider?: BluetoothCapabilityProvider
+  logger?: BluetoothLogger
 }

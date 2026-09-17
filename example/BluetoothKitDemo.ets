@@ -10,6 +10,8 @@ import {
   BluetoothScanMode,
   BluetoothTransport,
   BluetoothWriteMode,
+  BluetoothLogEvent,
+  BluetoothLogger,
   ByteUtils,
   HarmonyBluetoothPermissionGuide,
   JsonLineCodec,
@@ -17,6 +19,7 @@ import {
   MemoryBluetoothScanner,
   MemoryLoopbackTransport,
   ScannerFactory,
+  StaticBluetoothCapabilityProvider,
   TransportFactory
 } from '@kaworunagisa_hhl/bluetooth-kit'
 
@@ -35,6 +38,12 @@ class DemoScannerFactory implements ScannerFactory {
 
   create(): BluetoothScanner {
     return new MemoryBluetoothScanner(this.devices)
+  }
+}
+
+class DemoBluetoothLogger implements BluetoothLogger {
+  log(event: BluetoothLogEvent): void {
+    console.info('[bluetooth-kit] ' + event.level + ' ' + event.event)
   }
 }
 
@@ -122,7 +131,9 @@ struct Index {
       profiles,
       codecs: [new LengthPrefixedCodec(), new JsonLineCodec()],
       transportFactory: new DemoTransportFactory(),
-      scannerFactory: new DemoScannerFactory(memoryDevices)
+      scannerFactory: new DemoScannerFactory(memoryDevices),
+      capabilityProvider: new StaticBluetoothCapabilityProvider(),
+      logger: new DemoBluetoothLogger()
     }
     const manager = new BluetoothConnectionManager(config)
 
@@ -130,6 +141,9 @@ struct Index {
     this.profileSummary = errors.length === 0 ?
       '2 profiles / BLE length-prefixed + Classic JSON line' : errors[0].code
     this.permissionSummary = HarmonyBluetoothPermissionGuide.accessBluetoothPermission()
+    const capabilities = await manager.getCapabilities()
+    const classicStatus = capabilities.classicSppClient ? 'Classic SPP' : 'Classic unavailable'
+    this.profileSummary = 'BLE central / ' + classicStatus + ' / MTU=' + capabilities.mtu.toString()
     this.showToast('Profile 已校验：' + this.profileSummary)
     this.showToast('蓝牙权限：' + this.permissionSummary)
 
@@ -157,7 +171,7 @@ struct Index {
     await manager.scan({
       mode: BluetoothScanMode.Ble,
       timeoutMs: 1500,
-      filters: [{ serviceUuid: bleServiceUuid, namePrefix: 'Memory' }]
+      filters: [{ serviceUuid: bleServiceUuid, namePrefix: 'Memory', minRssi: -70 }]
     }, (device: BluetoothDeviceSnapshot) => {
       foundDevices.push(device)
     })

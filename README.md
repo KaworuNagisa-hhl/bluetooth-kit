@@ -18,6 +18,8 @@ ohpm install @kaworunagisa_hhl/bluetooth-kit
 - 支持 BLE Service/Characteristic、SPP UUID、协议 ID、连接超时、命令超时、重试、重连策略等配置。
 - 内置 `LengthPrefixedCodec` 与 `JsonLineCodec`，并可通过 `BluetoothProtocolCodec` 接入私有协议。
 - 内置命令队列、序号、ACK/DATA 应答匹配、超时重试、半包/粘包解析、CRC 与 BLE MTU 分包工具。
+- 支持运行时能力探测与结构化日志，方便按设备/API 版本判断 BLE、Classic SPP、MTU、RSSI、后台扫描和多连接等能力。
+- 扫描过滤支持 Service UUID、名称前缀、厂商 ID 与 RSSI 阈值，便于屏蔽弱信号或非目标设备。
 - 提供 `BleGattTransport`、`ClassicSppTransport`、`HarmonyBluetoothScanner`、`HarmonyBluetoothTransportFactory` 和权限辅助接口，方便按项目 API 版本接入 HarmonyOS 系统蓝牙能力。
 - 提供 `MemoryBluetoothScanner` 与 `MemoryLoopbackTransport`，可在没有真实外设时验证配置、协议、命令链路和页面反馈。
 
@@ -63,7 +65,8 @@ import {
   JsonLineCodec,
   LengthPrefixedCodec,
   MemoryBluetoothScanner,
-  MemoryLoopbackTransport
+  MemoryLoopbackTransport,
+  StaticBluetoothCapabilityProvider
 } from '@kaworunagisa_hhl/bluetooth-kit'
 
 const bleServiceUuid = '0000fff0-0000-1000-8000-00805f9b34fb'
@@ -124,6 +127,12 @@ const manager = new BluetoothConnectionManager({
         connectable: true
       }])
     }
+  },
+  capabilityProvider: new StaticBluetoothCapabilityProvider(),
+  logger: {
+    log(event) {
+      console.info('[bluetooth-kit] ' + event.level + ' ' + event.event)
+    }
   }
 })
 
@@ -132,10 +141,13 @@ if (profileErrors.length > 0) {
   console.error(profileErrors[0].message)
 }
 
+const capabilities = await manager.getCapabilities()
+console.info('ble=' + capabilities.bleCentral.toString() + ', spp=' + capabilities.classicSppClient.toString())
+
 await manager.scan({
   mode: BluetoothScanMode.Ble,
   timeoutMs: 1500,
-  filters: [{ serviceUuid: bleServiceUuid }]
+  filters: [{ serviceUuid: bleServiceUuid, minRssi: -70 }]
 }, (device) => {
   console.info('found device=' + device.deviceId)
 })
@@ -195,6 +207,8 @@ const scannerFactory = {
 - `ClassicSppClientAdapter`：包装传统蓝牙配对后的 SPP socket 连接、读写循环、断连和异常回调。
 - `HarmonyBluetoothScanAdapter`：包装 BLE 扫描、传统蓝牙发现和停止扫描，并把系统扫描结果转换为 `BluetoothDeviceSnapshot`。
 - `HarmonyBluetoothPermissionHelper`：把权限检查和申请结果转换成稳定的蓝牙错误模型，便于页面 Toast/Dialog 提示。
+- `BluetoothCapabilityProvider`：由业务侧读取真实系统、硬件和权限状态，返回 BLE Central/Peripheral、Classic SPP、RSSI、MTU、PHY、L2CAP、后台扫描、多连接等能力矩阵。
+- `BluetoothLogger`：接收扫描、连接、状态、发包、收包和异常事件，可接入项目日志、埋点或问题诊断面板。
 
 真实扫描、配对、连接、MTU 协商、后台行为和厂商设备协议都必须在真机验证。库本身提供稳定边界和可测试协议链路，系统 API 的具体调用由项目适配器负责。
 
