@@ -6,6 +6,7 @@
 - Added structured Bluetooth logger hooks for scan, connect, state, packet and error diagnostics.
 - Added RSSI threshold filtering for memory and Harmony scanner wrappers.
 - Updated demo and README usage to show capability reporting, logging and stronger scan filtering.
+- Aligned the OHPM package name and install/import examples to the main package `bluetooth_kit`.
 
 ## 1.0.1
 

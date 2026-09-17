@@ -21,7 +21,7 @@ import {
   ScannerFactory,
   StaticBluetoothCapabilityProvider,
   TransportFactory
-} from '@kaworunagisa_hhl/bluetooth-kit'
+} from 'bluetooth_kit'
 
 class DemoTransportFactory implements TransportFactory {
   create(): BluetoothTransport {

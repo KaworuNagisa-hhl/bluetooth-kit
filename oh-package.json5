@@ -1,6 +1,6 @@
 {
   "modelVersion": "6.0.2",
-  "name": "@kaworunagisa_hhl/bluetooth-kit",
+  "name": "bluetooth_kit",
   "version": "1.0.2",
   "description": "适用于 OpenHarmony/HarmonyOS ArkTS 的蓝牙连接与协议配置工具包，提供 BLE GATT、传统蓝牙 SPP 适配层、协议编解码、命令队列、分包与自定义设备画像扩展点。",
   "main": "Index.ets",
@@ -9,13 +9,13 @@
   "repository": "https://github.com/KaworuNagisa-hhl/bluetooth-kit",
   "license": "Apache-2.0",
   "keywords": [
-    "OpenHarmony",
-    "HarmonyOS",
-    "ArkTS",
-    "Bluetooth",
-    "BLE",
-    "GATT",
-    "SPP",
+    "openharmony",
+    "harmonyos",
+    "arkts",
+    "bluetooth",
+    "ble",
+    "gatt",
+    "spp",
     "protocol",
     "iot"
   ],
